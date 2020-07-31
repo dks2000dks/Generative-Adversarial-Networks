@@ -23,7 +23,7 @@ tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
 # Creating Model
 class DAE():
 	@staticmethod
-	def buildmodel(height,width,depth,filters=(16,32,64),latentDim=32):
+	def buildmodel(height,width,depth,filters=(32,64),latentDim=32):
 		
 		# Encoder Architecture
 		inputs = Input(shape=(height,width,depth))
@@ -61,20 +61,18 @@ class DAE():
 		return (Encoder,Decoder,AutoEncoder)
 		
 dae = DAE()
-Encoder,Decoder,AutoEncoder = dae.buildmodel(32,32,3)
+Encoder,Decoder,AutoEncoder = dae.buildmodel(28,28,1)
 print (AutoEncoder.summary())
-tf.keras.utils.plot_model(Encoder, to_file='Images/Encoder_CIFAR10.png', show_shapes=True, show_layer_names=True)
-tf.keras.utils.plot_model(Decoder, to_file='Images/Decoder_CIFAR10.png', show_shapes=True, show_layer_names=True)
-tf.keras.utils.plot_model(AutoEncoder, to_file='Images/AutoEncoder_CIFAR10.png', show_shapes=True, show_layer_names=True)
+tf.keras.utils.plot_model(Encoder, to_file='Images/Encoder_MNIST.png', show_shapes=True, show_layer_names=True)
+tf.keras.utils.plot_model(Decoder, to_file='Images/Decoder_MNIST.png', show_shapes=True, show_layer_names=True)
+tf.keras.utils.plot_model(AutoEncoder, to_file='Images/AutoEncoder_MNIST.png', show_shapes=True, show_layer_names=True)
 
 # Data Preparation
-((Y_Train,_),(Y_Test,_)) = cifar10.load_data()
+((Y_Train,_),(Y_Test,_)) = mnist.load_data()
 
-'''
 # Changing Channels of Image from 2(i.e Gray Scale) to 3
 Y_Train = np.expand_dims(Y_Train,axis=-1)
 Y_Test = np.expand_dims(Y_Test,axis=-1)
-'''
 
 Y_Train = Y_Train.astype("float32")/255.0
 Y_Test = Y_Test.astype("float32")/255.0
@@ -90,22 +88,22 @@ for i in range(10):
 	plt.subplot(2, 5, 1 + i)
 	plt.axis('off')
 	if i<5:
-		plt.imshow((X_Train[i]))
+		plt.imshow((X_Train[i][:,:,0]),cmap='gray')
 	else:
-		plt.imshow((Y_Train[i-5]))
+		plt.imshow((Y_Train[i-5][:,:,0]),cmap='gray')
 plt.show()
 
 
 # Training
 AutoEncoder.compile(loss='mse', optimizer='adam')
-Epochs=25
-Batch_Size=4
+Epochs=100
+Batch_Size=32
 
 '''
-AutoEncoder = load_model('Models/DAE_Model_CIFAR10.h5')
+AutoEncoder = load_model('Models/DAE_Model_MNIST.h5')
 '''
 Train_History = AutoEncoder.fit(X_Train,Y_Train,validation_data=(X_Test, Y_Test),epochs=Epochs,batch_size=Batch_Size)
-AutoEncoder.save("Models/DAE_Model_CIFAR10.h5")
+AutoEncoder.save("Models/DAE_Model_MNIST.h5")
 
 # Plotting Train Results
 N = np.arange(Epochs)
@@ -117,23 +115,23 @@ plt.title("Training and Validation Loss")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.legend(loc="best")
-plt.savefig("Images/Loss_CIFAR10-1.png")
+plt.savefig("Images/Loss_MNIST.png")
 
 
 # Testing
-AutoEncoder = load_model('Models/DAE_Model_CIFAR10.h5')
+AutoEncoder = load_model('Models/DAE_Model_MNIST.h5')
 for i in range(15):
 	plt.subplot(3, 5, 1 + i)
 	plt.axis('off')
 	if i<5:
-		plt.imshow((X_Train[i]))
+		plt.imshow((X_Train[i][:,:,0]),cmap='gray')
 	elif i<10 and i>=5:
-		plt.imshow((Y_Train[i-5]))
+		plt.imshow((Y_Train[i-5][:,:,0]),cmap='gray')
 	else:
 		X = np.expand_dims(X_Train[i-10],axis=0)
 		Y = AutoEncoder.predict(X)
-		Y = Y[0]
-		plt.imshow(Y)
+		Y = Y[0,:,:,0]
+		plt.imshow(Y,cmap='gray')
 		
-plt.savefig("Images/Results_CIFAR10-1.png")
+plt.savefig("Images/Results_MNIST.png")
 plt.show()
