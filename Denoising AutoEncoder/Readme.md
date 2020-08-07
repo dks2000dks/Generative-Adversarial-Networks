@@ -13,6 +13,7 @@ Model is trained with a Batch Size of 32 for 100 Epochs with Filters = (32,64) a
 <img src='Images/Loss_MNIST.png' width=50% height=50%>
 
 ### Results
+1st Row contains Images passed to Model as Input, 2nd Row Images are Targets for corresponding Inputs and 3rd Row contains Images that are Predicted by the Model.\
 <img src="Images/Results_MNIST.png" width=50%>
 
 ## CIFAR10
@@ -30,4 +31,5 @@ Training Loss Plot of last 10 Epochs is\
 <img src='Images/Loss_CIFAR10.png' width=50% height=50%>
 
 ### Results
+1st Row Images are Inputs, 2nd Row Images are Targets and 3rd Row Images are Predictions by the Model.\
 <img src="Images/Results_CIFAR10.png" width=50%>
